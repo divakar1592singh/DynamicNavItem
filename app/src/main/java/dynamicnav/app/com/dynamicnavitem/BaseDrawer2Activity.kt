@@ -1,10 +1,11 @@
 package dynamicnav.app.com.dynamicnavitem
 
 import android.os.Bundle
+import android.support.annotation.LayoutRes
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import android.view.Menu
-import android.view.MenuItem
+import android.view.*
+import android.widget.FrameLayout
 import com.mikepenz.fontawesome_typeface_library.FontAwesome
 import com.mikepenz.google_material_typeface_library.GoogleMaterial
 import com.mikepenz.iconics.IconicsDrawable
@@ -18,7 +19,8 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem
 import com.mikepenz.materialdrawer.model.interfaces.IProfile
 
-class BaseDrawerActivity : AppCompatActivity() {
+
+open class BaseDrawer2Activity : AppCompatActivity() {
 
     private val PROFILE_SETTING = 1
 
@@ -32,12 +34,16 @@ class BaseDrawerActivity : AppCompatActivity() {
     private lateinit var profile4: IProfile<*>
     private lateinit var profile5: IProfile<*>
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_drawer)
+    override fun setContentView(@LayoutRes layoutResID: Int) {
+        super.setContentView(layoutResID)
 
         // Handle Toolbar
-        val toolbar = findViewById(R.id.toolbar) as Toolbar
+        val rootView : View = LayoutInflater.from(this).inflate(R.layout.activity_base_drawer2, null);
+        val activityContainer = rootView.findViewById(R.id.activity_content) as FrameLayout
+        layoutInflater.inflate(layoutResID, activityContainer, true)
+
+        super.setContentView(rootView)
+        val toolbar = rootView.findViewById(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
         supportActionBar!!.setTitle(R.string.drawer_item_advanced_drawer)
 
@@ -49,7 +55,8 @@ class BaseDrawerActivity : AppCompatActivity() {
         profile5 = ProfileDrawerItem().withName("Batman").withEmail("batman@gmail.com").withIcon(resources.getDrawable(R.drawable.profile5))
 
         // Create the AccountHeader
-        buildHeader(false, savedInstanceState)
+//        buildHeader(false, savedInstanceState)
+        buildHeader(false)
 
         //Create the drawer
         result = DrawerBuilder()
@@ -71,13 +78,13 @@ class BaseDrawerActivity : AppCompatActivity() {
                         SecondaryDrawerItem().withName(R.string.drawer_item_settings).withIcon(FontAwesome.Icon.faw_cog).withIdentifier(10),
                         SecondaryDrawerItem().withName(R.string.drawer_item_open_source).withIcon(FontAwesome.Icon.faw_github)
                 )
-                .withSavedInstance(savedInstanceState)
+//                .withSavedInstance(savedInstanceState)
                 .build()
 
 
     }
 
-    private fun buildHeader(compact: Boolean, savedInstanceState: Bundle?) {
+    private fun buildHeader(compact: Boolean) {
         // Create the AccountHeader
         headerResult = AccountHeaderBuilder()
                 .withActivity(this)
@@ -109,7 +116,7 @@ class BaseDrawerActivity : AppCompatActivity() {
                     //false if you have not consumed the event and it should close the drawer
                     false
                 })
-                .withSavedInstance(savedInstanceState)
+//                .withSavedInstance(savedInstanceState)
                 .build()
     }
 
@@ -143,7 +150,7 @@ class BaseDrawerActivity : AppCompatActivity() {
             R.id.menu_4 -> {
                 //we want to replace our current header with a compact header
                 //build the new compact header
-                buildHeader(true, null)
+                buildHeader(true)
                 //set the view to the result
                 result.setHeader(headerResult.getView())
                 //set the drawer to the header (so it will manage the profile list correctly)
@@ -153,7 +160,7 @@ class BaseDrawerActivity : AppCompatActivity() {
             R.id.menu_5 -> {
                 //we want to replace our current header with a normal header
                 //build the new compact header
-                buildHeader(false, null)
+                buildHeader(false)
                 //set the view to the result
                 result.setHeader(headerResult.getView())
                 //set the drawer to the header (so it will manage the profile list correctly)
@@ -181,5 +188,6 @@ class BaseDrawerActivity : AppCompatActivity() {
             super.onBackPressed()
         }
     }
+
 
 }
